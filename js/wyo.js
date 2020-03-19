@@ -257,6 +257,19 @@ function handleFileSelect(ev) {
           createCSVLink("untested-priority-" + pri, base_name, $.csv.fromArrays(pri_untested));
         }
 
+        var pri_unk_untested = [];
+        for(var j = 0; j < data.length; j++) {
+          var row = data[j];
+          if(!row["COVID-19 Result"].trim()) {
+            if(!row["High Priority?"].trim()) {
+              pri_unk_untested.push(objectToRow(row));
+            }
+          }
+        }
+        pri_unk_untested.sort();
+        pri_unk_untested.unshift(COLUMN_NAMES);
+        createCSVLink("untested-priority-uknown", base_name, $.csv.fromArrays(pri_unk_untested));
+
         // Generate list of duplicates results
         var seen = {};
         var dupes = [];

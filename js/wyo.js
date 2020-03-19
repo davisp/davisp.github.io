@@ -136,28 +136,49 @@ function handleFileSelect(ev) {
             labels: ['Tested', 'Untested'],
             datasets: [
               {
-                label: 'Positives',
-                data: [10, 0],
-                backgroundColor: '#D6E9C6' // green
-              },
-              {
                 label: 'Negatives',
-                data: [15, 0],
-                backgroundColor: '#FAEBCC' // yellow
+                data: [summary["negative"], 0],
+                backgroundColor: '#003f5c'
               },
               {
-                label: 'Untested - Priority 1',
-                data: [0, 5],
-                backgroundColor: '#EBCCD1' // red
+                label: 'Positives',
+                data: [summary["positive"], 0],
+                backgroundColor: '#ffa600'
+              },
+              {
+                label: 'Untested - Unknown',
+                data: [0, summary["not_tested_unknown"]],
+                backgroundColor: '#003f5c'
+              },
+              {
+                label: 'Untested - Priority 5',
+                data: [0, summary["not_tested_5"]],
+                backgroundColor: '#444e86'
+              },
+              {
+                label: 'Untested - Priority 4',
+                data: [0, summary["not_tested_4"]],
+                backgroundColor: '#955196'
+              },
+              {
+                label: 'Untested - Priority 3',
+                data: [0, summary["not_tested_3"]],
+                backgroundColor: '#dd5182'
               },
               {
                 label: 'Untested - Priority 2',
-                data: [0, 10],
-                backgroundColor: '#EBCCD1' // red
+                data: [0, summary["not_tested_2"]],
+                backgroundColor: '#ff6e54'
+              },
+              {
+                label: 'Untested - Priority 1',
+                data: [0, summary["not_tested_1"]],
+                backgroundColor: '#ffa600'
               }
             ]
           },
           options: {
+            responsive: false,
             scales: {
               xAxes: [{ stacked: true }],
               yAxes: [{ stacked: true }]

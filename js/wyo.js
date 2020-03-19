@@ -129,6 +129,58 @@ function handleFileSelect(ev) {
         ];
         createDownloadLink("summary", base_name, $.csv.fromArrays(summary_rows), "text/csv");
 
+        var chart = new CanvasJS.Chart("chartContainer", {
+	        animationEnabled: true,
+	        title:{
+		        text: "Test Record Breakdown"
+	        },
+	        axisX: {
+		        valueFormatString: "DDD"
+	        },
+	        axisY: {
+		        prefix: ""
+	        },
+	        toolTip: {
+		        shared: true
+	        },
+	        legend:{
+		        cursor: "pointer"
+	        },
+	        data: [{
+		        type: "stackedColumn",
+		        name: "Positive",
+		        showInLegend: "true",
+		        dataPoints: [
+			        { x: 0, y: 10 }
+		        ]
+	        },
+	        {
+		        type: "stackedColumn",
+		        name: "Negative",
+		        showInLegend: "true",
+		        dataPoints: [
+			        { x: 0, y: 50 }
+		        ]
+	        },
+	        {
+		        type: "stackedColumn",
+		        name: "Untested - Priority 1",
+		        showInLegend: "true",
+		        dataPoints: [
+			        { x: 1, y: 5 }
+		        ]
+	        },
+	        {
+		        type: "stackedColumn",
+		        name: "Untested - Priority 2",
+		        showInLegend: "true",
+		        dataPoints: [
+			        { x: 1, y: 52 }
+		        ]
+	        }]
+        });
+        chart.render();
+
         // Generate list of positive results
         var positives = [];
         for(var j = 0; j < data.length; j++) {
@@ -186,7 +238,6 @@ function handleFileSelect(ev) {
         var dupes = [];
         for(var j = 0; j < data.length; j++) {
           var row = data[j];
-          console.log(row);
           var key = rowKey(row);
           if(seen.hasOwnProperty(key)) {
             seen[key] += 1;

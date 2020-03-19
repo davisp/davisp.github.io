@@ -129,57 +129,41 @@ function handleFileSelect(ev) {
         ];
         createDownloadLink("summary", base_name, $.csv.fromArrays(summary_rows), "text/csv");
 
-        var chart = new CanvasJS.Chart("chartContainer", {
-	        animationEnabled: true,
-	        title:{
-		        text: "Test Record Breakdown"
-	        },
-	        axisX: {
-		        valueFormatString: "DDD"
-	        },
-	        axisY: {
-		        prefix: ""
-	        },
-	        toolTip: {
-		        shared: true
-	        },
-	        legend:{
-		        cursor: "pointer"
-	        },
-	        data: [{
-		        type: "stackedColumn",
-		        name: "Positive",
-		        showInLegend: "true",
-		        dataPoints: [
-			        { x: 0, y: 10 }
-		        ]
-	        },
-	        {
-		        type: "stackedColumn",
-		        name: "Negative",
-		        showInLegend: "true",
-		        dataPoints: [
-			        { x: 0, y: 50 }
-		        ]
-	        },
-	        {
-		        type: "stackedColumn",
-		        name: "Untested - Priority 1",
-		        showInLegend: "true",
-		        dataPoints: [
-			        { x: 1, y: 5 }
-		        ]
-	        },
-	        {
-		        type: "stackedColumn",
-		        name: "Untested - Priority 2",
-		        showInLegend: "true",
-		        dataPoints: [
-			        { x: 1, y: 52 }
-		        ]
-	        }]
+        var chart_cnv = document.getElementById('chart');
+        var myChart = new Chart(chart_cnv, {
+          type: 'bar',
+          data: {
+            labels: ['Tested', 'Untested'],
+            datasets: [
+              {
+                label: 'Positives',
+                data: [10, 0],
+                backgroundColor: '#D6E9C6' // green
+              },
+              {
+                label: 'Negatives',
+                data: [15, 0],
+                backgroundColor: '#FAEBCC' // yellow
+              },
+              {
+                label: 'Untested - Priority 1',
+                data: [0, 5],
+                backgroundColor: '#EBCCD1' // red
+              },
+              {
+                label: 'Untested - Priority 2',
+                data: [0, 10],
+                backgroundColor: '#EBCCD1' // red
+              }
+            ]
+          },
+          options: {
+            scales: {
+              xAxes: [{ stacked: true }],
+              yAxes: [{ stacked: true }]
+            }
+          }
         });
-        chart.render();
 
         // Generate list of positive results
         var positives = [];

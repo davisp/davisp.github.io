@@ -179,12 +179,18 @@ function handleFileSelect(ev) {
           },
           options: {
             responsive: false,
+            legend: {
+              align: "start",
+              position: "bottom",
+              reverse: true
+            },
             scales: {
               xAxes: [{ stacked: true }],
               yAxes: [{ stacked: true }]
             }
           }
         });
+        myChart.generateLegend();
 
         // Generate list of positive results
         var positives = [];

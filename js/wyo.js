@@ -67,6 +67,8 @@ function handleFileSelect(ev) {
       continue;
     }
 
+    console.log("Processing: " + f.name);
+
     var reader = new FileReader();
     reader.onload = (function(file) {
       document.getElementById('results').innerHTML = "";

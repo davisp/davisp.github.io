@@ -16,19 +16,29 @@ var COLUMN_NAMES = [
   "Result Date"
 ];
 
-function createDownloadLink(name, base_filename, data, type) {
-  if(BLOB_URLS[name]) {
-    URL.revokeObjectURL(BLOB_URLS[name]);
-  }
-  var blob = new Blob([data], {"type": type});
-  BLOB_URLS[name] = URL.createObjectURL(blob);
+function createDownloadLink(name, filename) {
   var link = document.createElement("a");
   link.href = BLOB_URLS[name];
-  link.download = base_filename + "-" + name + ".csv";
-  link.innerHTML = base_filename + "-" + name + ".csv";
+  link.id = name;
+  link.download = filename;
+  link.innerHTML = filename;
   var li = document.createElement("li");
   li.insertBefore(link, null);
   document.getElementById('results').insertBefore(li, null);
+}
+
+function createCSVLink(name, base_filename, data) {
+  if(BLOB_URLS[name]) {
+    URL.revokeObjectURL(BLOB_URLS[name]);
+  }
+  var blob = new Blob([data], {"type": "text/csv"});
+  BLOB_URLS[name] = URL.createObjectURL(blob);
+  createDownloadLink(name, base_filename + "-" + name + ".csv");
+}
+
+function createIMGLink(name, base_filename, data) {
+  BLOB_URLS[name] = data;
+  createDownloadLink(name, base_filename + "-" + name + ".png");
 }
 
 function objectToRow(data) {
@@ -112,22 +122,6 @@ function handleFileSelect(ev) {
             summary["unknown"] += 1;
           }
         }
-        var summary_rows = [
-          ["Group", "Count"],
-          ["Total Records", summary["total"]],
-          ["Total Tested", summary["tested"]],
-          ["Positive", summary["positive"]],
-          ["Negative", summary["negative"]],
-          ["Untested", summary["not_tested"]],
-          ["Untested - Priority 1", summary["not_tested_1"]],
-          ["Untested - Priority 2", summary["not_tested_2"]],
-          ["Untested - Priority 3", summary["not_tested_3"]],
-          ["Untested - Priority 4", summary["not_tested_4"]],
-          ["Untested - Priority 5", summary["not_tested_5"]],
-          ["Untested - No Priority", summary["not_tested_unknown"]],
-          ["Unclassified", summary["unknown"]]
-        ];
-        createDownloadLink("summary", base_name, $.csv.fromArrays(summary_rows), "text/csv");
 
         var chart_cnv = document.getElementById('chart');
         var myChart = new Chart(chart_cnv, {
@@ -135,16 +129,6 @@ function handleFileSelect(ev) {
           data: {
             labels: ['Tested', 'Untested'],
             datasets: [
-              {
-                label: 'Negatives',
-                data: [summary["negative"], 0],
-                backgroundColor: '#003f5c'
-              },
-              {
-                label: 'Positives',
-                data: [summary["positive"], 0],
-                backgroundColor: '#ffa600'
-              },
               {
                 label: 'Untested - Unknown',
                 data: [0, summary["not_tested_unknown"]],
@@ -174,11 +158,24 @@ function handleFileSelect(ev) {
                 label: 'Untested - Priority 1',
                 data: [0, summary["not_tested_1"]],
                 backgroundColor: '#ffa600'
+              },
+              {
+                label: 'Negatives',
+                data: [summary["negative"], 0],
+                backgroundColor: '#00a5af'
+              },
+              {
+                label: 'Positives',
+                data: [summary["positive"], 0],
+                backgroundColor: '#a2ff94'
               }
             ]
           },
           options: {
             responsive: false,
+            animation: {
+              duration: 0
+            },
             legend: {
               align: "start",
               position: "bottom",
@@ -190,8 +187,24 @@ function handleFileSelect(ev) {
             }
           }
         });
-        myChart.generateLegend();
+        createIMGLink("graph", base_name, chart_cnv.toDataURL());
 
+        var summary_rows = [
+          ["Group", "Count"],
+          ["Total Records", summary["total"]],
+          ["Total Tested", summary["tested"]],
+          ["Positive", summary["positive"]],
+          ["Negative", summary["negative"]],
+          ["Untested", summary["not_tested"]],
+          ["Untested - Priority 1", summary["not_tested_1"]],
+          ["Untested - Priority 2", summary["not_tested_2"]],
+          ["Untested - Priority 3", summary["not_tested_3"]],
+          ["Untested - Priority 4", summary["not_tested_4"]],
+          ["Untested - Priority 5", summary["not_tested_5"]],
+          ["Untested - No Priority", summary["not_tested_unknown"]],
+          ["Unclassified", summary["unknown"]]
+        ];
+        createCSVLink("summary", base_name, $.csv.fromArrays(summary_rows));
         // Generate list of positive results
         var positives = [];
         for(var j = 0; j < data.length; j++) {
@@ -202,7 +215,7 @@ function handleFileSelect(ev) {
         }
         positives.sort();
         positives.unshift(COLUMN_NAMES);
-        createDownloadLink("positives", base_name, $.csv.fromArrays(positives), "text/csv");
+        createCSVLink("positives", base_name, $.csv.fromArrays(positives));
 
         // Generate list of negative results
         var negatives = [];
@@ -214,7 +227,7 @@ function handleFileSelect(ev) {
         }
         negatives.sort();
         negatives.unshift(COLUMN_NAMES);
-        createDownloadLink("negatives", base_name, $.csv.fromArrays(negatives), "text/csv");
+        createCSVLink("negatives", base_name, $.csv.fromArrays(negatives));
 
         // Generate list of untested results
         var untested = [];
@@ -226,7 +239,7 @@ function handleFileSelect(ev) {
         }
         untested.sort();
         untested.unshift(COLUMN_NAMES);
-        createDownloadLink("untested", base_name, $.csv.fromArrays(untested), "text/csv");
+        createCSVLink("untested", base_name, $.csv.fromArrays(untested));
 
         // Generate list of untested priority N results
         for(var pri = 1; pri <= 5; pri++) {
@@ -241,7 +254,7 @@ function handleFileSelect(ev) {
           }
           pri_untested.sort();
           pri_untested.unshift(COLUMN_NAMES);
-          createDownloadLink("untested-priority-" + pri, base_name, $.csv.fromArrays(pri_untested), "text/csv");
+          createCSVLink("untested-priority-" + pri, base_name, $.csv.fromArrays(pri_untested));
         }
 
         // Generate list of duplicates results
@@ -265,7 +278,7 @@ function handleFileSelect(ev) {
         }
         dupes.sort();
         dupes.unshift(COLUMN_NAMES);
-        createDownloadLink("duplicates", base_name, $.csv.fromArrays(dupes), "text/csv");
+        createCSVLink("duplicates", base_name, $.csv.fromArrays(dupes));
       };
     })(f);
 
